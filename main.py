@@ -34,15 +34,25 @@ df['prop'] = df['count'] / df['total_births']
 st.title('My Name App')
 
 tab1, tab2, tab3 = st.tabs(['Overall', 'By Name', 'By year'])
+
 with tab1:
     st.write("Here is stuff about all the data")
+    unique_names_by_gender = df.groupby(['year', 'sex'])['name'].nunique().reset_index()
+    # Plot
+    fig = plt.figure(figsize=(10, 5))
+    for gender in ['F', 'M']:
+        gender_data = unique_names_by_gender[unique_names_by_gender['sex'] == gender]
+        plt.plot(gender_data['year'], gender_data['name'], label='Female' if gender == 'F' else 'Male')
+
+    plt.title('Number of Unique Baby Names per Year by Gender')
+    plt.xlabel('Year')
+    plt.ylabel('Unique Names')
+    plt.legend()
+    plt.tight_layout()
+    st.pyplot(fig)
 
 with tab2:
     st.write('Name')
-
-
-
-
 # pick a name
     noi = st.text_input('Enter a name')
     plot_female = st.checkbox('Plot female line')
@@ -69,10 +79,8 @@ with tab2:
 
 with tab3:
     st.write('Year')
-    # fig = plt.figure()
-    year_of_interest = int(st.text_input('Enter a year'))
+    year_of_interest = int((st.text_input('Enter a year')))
     plot_gender = st.selectbox('Plot gender', ('F', 'M'))
-    # plot_male = st.selectbox('Plot male line')
     top_names = df[df['year'] == year_of_interest]
 
     if plot_gender == 'F':
